@@ -63,7 +63,19 @@ jobs:
           # Check the installed RPM details
           echo
           yum -q info gcc-custom | tee /workspace/gcc-yuminfo-output.log
+
+          # Check the GCC version
+          echo
+          source /etc/profile.d/gcc15-custom.sh
+          gcc -v | tee /workspace/gcc-version-output.log
+          echo | tee -a /workspace/gcc-version-output.log
+          /opt/gcc-custom/gcc15/bin/gcc -v | tee -a /workspace/gcc-version-output.log
         "
+
+    - name: Display gcc version
+      run: |
+        echo "Displaying gcc version:"
+        cat ${{ github.workspace }}/gcc-version-output.log
 
     - name: Display gcc qpl info
       run: |
