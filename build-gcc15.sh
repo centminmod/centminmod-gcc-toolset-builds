@@ -28,6 +28,7 @@ dnf config-manager --set-enabled ${CRB_REPO}
 dnf groupinstall -y "Development Tools"
 dnf install --allowerasing -y \
   binutils \
+  debugedit \
   rpm-build \
   gmp-devel \
   mpfr-devel \
@@ -51,7 +52,6 @@ dnf install --allowerasing -y \
   curl \
   openssl-devel \
   xz \
-  mold \
   xz-devel \
   binutils \
   libtool \
@@ -100,7 +100,7 @@ License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        ${GCC_SRC_TAR}
 
-BuildRequires:  mold glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake
+BuildRequires:  mold glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit
 
 %description
 GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project supporting various programming languages. This package installs GCC 15 in a custom directory.
@@ -113,9 +113,8 @@ rm -rf %{_builddir}/*
 mkdir -p build
 cd build
 ../configure \
-  LDFLAGS="-fuse-ld=mold" \
-  CFLAGS="-g -O2 -fuse-ld=mold -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
-  CXXFLAGS="-g -O2 -fuse-ld=mold -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
+  CFLAGS="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
+  CXXFLAGS="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
   --prefix=${PREFIX} \
   --mandir=${PREFIX}/share/man \
   --infodir=${PREFIX}/share/info \
@@ -168,8 +167,6 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}${PREFIX}
-mkdir -p %{buildroot}${PREFIX}/x86_64-redhat-linux/bin
-ln -fs /usr/bin/mold %{buildroot}${PREFIX}/x86_64-redhat-linux/bin/ld.mold
 cd build
 make install DESTDIR=%{buildroot}
 
