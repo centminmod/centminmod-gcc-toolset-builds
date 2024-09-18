@@ -100,7 +100,7 @@ License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        ${GCC_SRC_TAR}
 
-BuildRequires:  mold glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit
+BuildRequires:  glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit
 
 %description
 GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project supporting various programming languages. This package installs GCC 15 in a custom directory.
