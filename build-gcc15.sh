@@ -27,6 +27,8 @@ dnf config-manager --set-enabled ${CRB_REPO}
 # Install dependencies
 dnf groupinstall -y "Development Tools"
 dnf install --allowerasing -y \
+  binutils \
+  rpm-build \
   gmp-devel \
   mpfr-devel \
   libmpc-devel \
@@ -49,13 +51,37 @@ dnf install --allowerasing -y \
   curl \
   openssl-devel \
   xz \
+  mold \
   xz-devel \
   binutils \
   libtool \
-  pkgconfig
+  pkgconfig \
+  gcc-toolset-13-annobin-annocheck \
+  gcc-toolset-13-annobin-docs.noarch \
+  gcc-toolset-13-annobin-plugin-gcc \
+  gcc-toolset-13-binutils \
+  gcc-toolset-13-binutils-devel \
+  gcc-toolset-13-dwz \
+  gcc-toolset-13-gcc \
+  gcc-toolset-13-gcc-c++ \
+  gcc-toolset-13-gcc-gfortran \
+  gcc-toolset-13-gdb \
+  gcc-toolset-13-libasan-devel \
+  gcc-toolset-13-libatomic-devel \
+  gcc-toolset-13-libgccjit \
+  gcc-toolset-13-libgccjit-devel \
+  gcc-toolset-13-libgccjit-docs \
+  gcc-toolset-13-libitm-devel \
+  gcc-toolset-13-liblsan-devel \
+  gcc-toolset-13-libquadmath-devel \
+  gcc-toolset-13-libstdc++-devel \
+  gcc-toolset-13-libtsan-devel \
+  gcc-toolset-13-libubsan-devel \
+  gcc-toolset-13-runtime --skip-broken
 
 # Create RPM build directories
 mkdir -p ${BUILD_DIR}/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+mkdir -p /home/gcc-toolset-build
 
 # Download GCC source tarball if not already available
 if [ ! -f ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR} ]; then
@@ -74,24 +100,78 @@ License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        ${GCC_SRC_TAR}
 
-BuildRequires:  gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake
+BuildRequires:  mold glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake
 
 %description
 GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project supporting various programming languages. This package installs GCC 15 in a custom directory.
 
 %prep
-%setup -q gcc-master
+rm -rf %{_builddir}/*
+%setup -q -n gcc-master
 
 %build
 mkdir -p build
 cd build
-../configure --prefix=${PREFIX} --enable-bootstrap --enable-languages=c,c++,fortran,lto --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --without-isl --enable-offload-targets=nvptx-none --without-cuda-driver --enable-offload-defaulted --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_64=x86-64-v2 --with-arch_32=x86-64 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1
-make -j$(nproc)
+../configure \
+  LDFLAGS="-fuse-ld=mold" \
+  CFLAGS="-g -O2 -fuse-ld=mold -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
+  CXXFLAGS="-g -O2 -fuse-ld=mold -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
+  --prefix=${PREFIX} \
+  --mandir=${PREFIX}/share/man \
+  --infodir=${PREFIX}/share/info \
+  --enable-bootstrap \
+  --enable-languages=c,c++,fortran,lto \
+  --enable-shared \
+  --enable-threads=posix \
+  --enable-checking=release \
+  --disable-multilib \
+  --with-system-zlib \
+  --enable-__cxa_atexit \
+  --disable-libunwind-exceptions \
+  --enable-gnu-unique-object \
+  --enable-linker-build-id \
+  --with-gcc-major-version-only \
+  --enable-libstdcxx-backtrace \
+  --with-libstdcxx-zoneinfo=/usr/share/zoneinfo \
+  --with-linker-hash-style=gnu \
+  --enable-plugin \
+  --enable-initfini-array \
+  --without-isl \
+  --enable-offload-targets=nvptx-none \
+  --without-cuda-driver \
+  --enable-offload-defaulted \
+  --enable-gnu-indirect-function \
+  --enable-cet \
+  --with-tune=generic \
+  --with-arch_64=x86-64-v2 \
+  --with-arch_32=x86-64 \
+  --build=x86_64-redhat-linux \
+  --with-build-config=bootstrap-lto \
+  --enable-link-serialization=1
+
+# Output config.log
+echo "=============== CONFIG.LOG ==============="
+cat config.log
+echo "=========== END OF CONFIG.LOG ============"
+
+# Output Makefile
+echo "=============== MAKEFILE ==============="
+cat Makefile
+echo "=========== END OF MAKEFILE ============"
+
+# Output environment variables
+echo "=============== BUILD ENVIRONMENT ==============="
+env
+echo "=========== END OF BUILD ENVIRONMENT ============"
+
+make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}${PREFIX}
+mkdir -p %{buildroot}${PREFIX}/x86_64-redhat-linux/bin
+ln -fs /usr/bin/mold %{buildroot}${PREFIX}/x86_64-redhat-linux/bin/ld.mold
 cd build
-make install DESTDIR=%{buildroot}${PREFIX}
+make install DESTDIR=%{buildroot}
 
 # Add enablement script
 mkdir -p %{buildroot}/etc/profile.d
@@ -100,6 +180,9 @@ export PATH=${PREFIX}/bin:\$PATH
 export LD_LIBRARY_PATH=${PREFIX}/lib64:\$LD_LIBRARY_PATH
 export MANPATH=${PREFIX}/share/man:\$MANPATH
 EOL
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
 ${PREFIX}
@@ -123,7 +206,11 @@ cat ${BUILD_DIR}/SPECS/gcc-custom.spec
 echo
 
 # Build the RPM using rpmbuild
-rpmbuild -ba ${BUILD_DIR}/SPECS/gcc-custom.spec --define "dist .${DISTTAG}"
+rm -rf ${BUILD_DIR}/{BUILD,BUILDROOT}/*
+source /opt/rh/gcc-toolset-13/enable
+export QA_RPATHS=$((0x0020))
+mkdir -p /workspace
+time rpmbuild -ba ${BUILD_DIR}/SPECS/gcc-custom.spec --define "dist .${DISTTAG}" --define "_buildhost host_${DISTTAG}" 2>&1 | tee "/workspace/build_gcc_toolset_$(date +"%d%m%y-%H%M%S").log"
 
 # Move the built RPMs and SRPMs to the workspace for GitHub Actions
 mkdir -p /workspace/rpms

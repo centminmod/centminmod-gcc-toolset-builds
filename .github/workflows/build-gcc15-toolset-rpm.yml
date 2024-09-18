@@ -47,7 +47,43 @@ jobs:
           # List the RPMs in the /workspace/rpms directory
           echo
           ls -lah /workspace/rpms/
+
+          # Install the built RPM (non-debug version)
+          echo
+          yum localinstall -y /root/rpmbuild/RPMS/x86_64/gcc-custom-1*.x86_64.rpm
+
+          # Check package files
+          echo
+          rpm -ql gcc-custom | tee /workspace/gcc-qpl-output.log
+
+          # Changelog check
+          echo
+          rpm -q --changelog gcc-custom | tee /workspace/gcc-changelog-output.log
+         
+          # Check the installed RPM details
+          echo
+          yum -q info gcc-custom | tee /workspace/gcc-yuminfo-output.log
         "
+
+    - name: Display gcc qpl info
+      run: |
+        echo "Displaying gcc qpl info:"
+        cat ${{ github.workspace }}/gcc-qpl-output.log
+
+    - name: Display gcc changelog info
+      run: |
+        echo "Displaying gcc changelog info:"
+        cat ${{ github.workspace }}/gcc-changelog-output.log
+
+    - name: Display gcc yum info
+      run: |
+        echo "Displaying gcc yum info:"
+        cat ${{ github.workspace }}/gcc-yuminfo-output.log
+
+    - name: Debugging Show contents of /workspace/rpms
+      run: |
+        echo "Checking for RPMs in /workspace/rpms on host..."
+        ls -lah ${{ github.workspace }}/rpms/
 
     - name: Upload RPM artifacts
       uses: actions/upload-artifact@v4
