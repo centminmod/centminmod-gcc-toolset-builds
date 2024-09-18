@@ -112,9 +112,33 @@ rm -rf %{_builddir}/*
 %build
 mkdir -p build
 cd build
+
+# Conditional setting of flags based on RHEL version
+%if 0%{?rhel} == 8
+CFLAGS_COMMON="-g -gdwarf-4 -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than -Wno-pedantic -Wno-parentheses"
+%else
+CFLAGS_COMMON="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than -Wno-pedantic -Wno-parentheses"
+%endif
+
+# Set flags for different stages
+CFLAGS="$CFLAGS_COMMON"
+CXXFLAGS="$CFLAGS_COMMON"
+BOOT_CFLAGS="$CFLAGS_COMMON"
+BOOT_CXXFLAGS="$CFLAGS_COMMON"
+CFLAGS_FOR_TARGET="$CFLAGS_COMMON"
+CXXFLAGS_FOR_TARGET="$CFLAGS_COMMON"
+STAGE1_CFLAGS="$CFLAGS_COMMON"
+STAGE1_CXXFLAGS="$CFLAGS_COMMON"
+
 ../configure \
-  CFLAGS="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
-  CXXFLAGS="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than" \
+    CFLAGS="$CFLAGS" \
+    CXXFLAGS="$CXXFLAGS" \
+    BOOT_CFLAGS="$BOOT_CFLAGS" \
+    BOOT_CXXFLAGS="$BOOT_CXXFLAGS" \
+    CFLAGS_FOR_TARGET="$CFLAGS_FOR_TARGET" \
+    CXXFLAGS_FOR_TARGET="$CXXFLAGS_FOR_TARGET" \
+    STAGE1_CFLAGS="$STAGE1_CFLAGS" \
+    STAGE1_CXXFLAGS="$STAGE1_CXXFLAGS" \
   --prefix=${PREFIX} \
   --mandir=${PREFIX}/share/man \
   --infodir=${PREFIX}/share/info \
