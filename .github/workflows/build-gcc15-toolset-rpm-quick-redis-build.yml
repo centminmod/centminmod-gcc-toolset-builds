@@ -1,0 +1,185 @@
+name: CMM rpmbuild GCC 15 Quick Build RPM and Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: ['almalinux:9', 'almalinux:8']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Sysbox
+      run: |
+        curl -LO https://downloads.nestybox.com/sysbox/releases/v0.6.4/sysbox-ce_0.6.4-0.linux_amd64.deb
+        sudo dpkg -i sysbox-ce_0.6.4-0.linux_amd64.deb || sudo apt-get install -f
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up AlmaLinux container, build GCC 15 RPM, and test compilers
+      run: |
+        mkdir -p ${{ github.workspace }}/rpms
+        docker pull ${{ matrix.os }}
+        docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace ${{ matrix.os }} /bin/bash -c "
+          if [[ '${{ matrix.os }}' == 'almalinux:8' ]]; then
+            DISTTAG='el8'
+          else
+            DISTTAG='el9'
+          fi
+
+          # Copy the build script and run it
+          cp /workspace/build-gcc15-quick-redis-build.sh /tmp
+          chmod +x /tmp/build-gcc15-quick-redis-build.sh
+          /tmp/build-gcc15-quick-redis-build.sh $DISTTAG
+
+          # Copy the built RPMs to the mounted /workspace/rpms directory on the host
+          mkdir -p /workspace/rpms
+          cp /root/rpmbuild/RPMS/x86_64/*.rpm /workspace/rpms/
+          cp /root/rpmbuild/SRPMS/*.rpm /workspace/rpms/
+
+          # List the RPMs in the /workspace/rpms directory
+          echo
+          ls -lah /workspace/rpms/
+
+          # Install the built RPM
+          echo
+          yum localinstall -y /root/rpmbuild/RPMS/x86_64/gcc-custom-1*.x86_64.rpm
+
+          # Check package files
+          echo
+          rpm -ql gcc-custom | tee /workspace/gcc-qpl-output.log
+
+          # Changelog check
+          echo
+          rpm -q --changelog gcc-custom | tee /workspace/gcc-changelog-output.log
+         
+          # Check the installed RPM details
+          echo
+          yum -q info gcc-custom | tee /workspace/gcc-yuminfo-output.log
+
+          # Check the GCC version
+          echo
+          source /etc/profile.d/gcc15-custom.sh
+          gcc -v 2>&1 | tee /workspace/gcc-version-output.log
+          echo | tee -a /workspace/gcc-version-output.log
+          /opt/gcc-custom/gcc15/bin/gcc -v 2>&1 | tee -a /workspace/gcc-version-output.log
+
+          # Install necessary packages for Redis
+          dnf install -y tcl jemalloc-devel
+
+          # Download and extract Redis
+          cd /tmp
+          wget http://download.redis.io/releases/redis-7.2.5.tar.gz
+          tar xzf redis-7.2.5.tar.gz
+          cd redis-7.2.5
+
+          # Function to build and test Redis
+          build_and_test_redis() {
+            local compiler_name=\$1
+            local compiler_path=\$2
+
+            echo 'Building Redis with' \$compiler_name
+
+            make distclean
+            make CC=\$compiler_path MALLOC=jemalloc
+
+            # Record binary size
+            ls -lh src/redis-server > /workspace/redis-server-size-\${compiler_name}.txt
+
+            # Run Redis benchmark
+            echo 'Running Redis benchmark with' \$compiler_name
+            src/redis-server --daemonize yes
+            sleep 2
+            src/redis-benchmark -n 100000 -q > /workspace/redis-benchmark-\${compiler_name}.txt
+            src/redis-cli shutdown
+          }
+
+          # Build and test with system GCC
+          build_and_test_redis 'system-gcc' '/usr/bin/gcc'
+
+          # Build and test with GCC 13
+          source /opt/rh/gcc-toolset-13/enable
+          build_and_test_redis 'gcc13' '/opt/rh/gcc-toolset-13/root/usr/bin/gcc'
+
+          # Build and test with GCC 15
+          source /etc/profile.d/gcc15-custom.sh
+          build_and_test_redis 'gcc15' '/opt/gcc-custom/gcc15/bin/gcc'
+        "
+
+    - name: Display gcc version
+      run: |
+        echo "Displaying gcc version:"
+        cat ${{ github.workspace }}/gcc-version-output.log
+
+    - name: Display gcc qpl info
+      run: |
+        echo "Displaying gcc qpl info:"
+        cat ${{ github.workspace }}/gcc-qpl-output.log
+
+    - name: Display gcc changelog info
+      run: |
+        echo "Displaying gcc changelog info:"
+        cat ${{ github.workspace }}/gcc-changelog-output.log
+
+    - name: Display gcc yum info
+      run: |
+        echo "Displaying gcc yum info:"
+        cat ${{ github.workspace }}/gcc-yuminfo-output.log
+
+    - name: Debugging Show contents of /workspace/rpms
+      run: |
+        echo "Checking for RPMs in /workspace/rpms on host..."
+        ls -lah ${{ github.workspace }}/rpms/
+
+    - name: Set custom artifact names
+      run: |
+        if [[ ${{ matrix.os }} == 'almalinux:8' ]]; then
+          echo "ARTIFACT_NAME_RPMS=gcc15-toolset-rpms-quick-redis-build-almalinux-8" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME_REDIS=redis-test-results-almalinux-8" >> $GITHUB_ENV
+        else
+          echo "ARTIFACT_NAME_RPMS=gcc15-toolset-rpms-quick-redis-build-almalinux-9" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME_REDIS=redis-test-results-almalinux-9" >> $GITHUB_ENV
+        fi
+
+    - name: Display Redis server sizes
+      run: |
+        echo "Redis server sizes:"
+        echo "System GCC:"
+        cat ${{ github.workspace }}/redis-server-size-system-gcc.txt
+        echo "GCC 13:"
+        cat ${{ github.workspace }}/redis-server-size-gcc13.txt
+        echo "GCC 15:"
+        cat ${{ github.workspace }}/redis-server-size-gcc15.txt
+
+    - name: Display Redis benchmark results
+      run: |
+        echo "Redis benchmark with system GCC:"
+        cat ${{ github.workspace }}/redis-benchmark-system-gcc.txt
+        echo "Redis benchmark with GCC 13:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc13.txt
+        echo "Redis benchmark with GCC 15:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc15.txt
+
+    - name: Upload Redis Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME_REDIS }}
+        path: |
+          ${{ github.workspace }}/redis-server-size-*.txt
+          ${{ github.workspace }}/redis-benchmark-*.txt
+
+    - name: Upload RPM
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME_RPMS }}
+        path: ${{ github.workspace }}/rpms/*.rpm
+        if-no-files-found: warn
+        compression-level: 0
+        overwrite: false
