@@ -34,6 +34,14 @@ jobs:
             DISTTAG='el9'
           fi
 
+          # Copy redis-benchmark-parser.py
+          cp /workspace/redis-benchmark-parser.py /tmp
+          chmod +x /tmp/redis-benchmark-parser.py
+
+          # Copy generate_markdown_table.py
+          cp /workspace/generate_markdown_table.py /tmp
+          chmod +x /tmp/generate_markdown_table.py
+
           # Copy the build script and run it
           cp /workspace/build-gcc15-quick-redis-build.sh /tmp
           chmod +x /tmp/build-gcc15-quick-redis-build.sh
@@ -99,6 +107,10 @@ jobs:
             sleep 2
             src/redis-benchmark -n 100000 -q > /workspace/redis-benchmark-\${compiler_name}.txt
             src/redis-cli shutdown
+
+            # parse results
+            python3 /tmp/redis-benchmark-parser.py -f json /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.json
+            python3 /tmp/redis-benchmark-parser.py -f csv /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.csv
           }
 
           # Build and test with system GCC
@@ -158,14 +170,60 @@ jobs:
         echo "GCC 15:"
         cat ${{ github.workspace }}/redis-server-size-gcc15.txt
 
-    - name: Display Redis benchmark results
+    - name: Display Redis benchmark with system GCC results
       run: |
         echo "Redis benchmark with system GCC:"
         cat ${{ github.workspace }}/redis-benchmark-system-gcc.txt
+
+    - name: Display Redis benchmark with GCC 13 results
+      run: |
         echo "Redis benchmark with GCC 13:"
         cat ${{ github.workspace }}/redis-benchmark-gcc13.txt
+
+    - name: Display Redis benchmark with GCC 15 results
+      run: |
         echo "Redis benchmark with GCC 15:"
         cat ${{ github.workspace }}/redis-benchmark-gcc15.txt
+
+    - name: Display Redis benchmark with system GCC results - JSON format
+      run: |
+        echo "Redis benchmark with system GCC:"
+        cat ${{ github.workspace }}/redis-benchmark-system-gcc.json
+
+    - name: Display Redis benchmark with GCC 13 results - JSON format
+      run: |
+        echo "Redis benchmark with GCC 13:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc13.json
+
+    - name: Display Redis benchmark with GCC 15 results - JSON format
+      run: |
+        echo "Redis benchmark with GCC 15:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc15.json
+
+    - name: Display Redis benchmark with system GCC results - CSV format
+      run: |
+        echo "Redis benchmark with system GCC:"
+        cat ${{ github.workspace }}/redis-benchmark-system-gcc.csv
+
+    - name: Display Redis benchmark with GCC 13 results - CSV format
+      run: |
+        echo "Redis benchmark with GCC 13:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc13.csv
+
+    - name: Display Redis benchmark with GCC 15 results - CSV format
+      run: |
+        echo "Redis benchmark with GCC 15:"
+        cat ${{ github.workspace }}/redis-benchmark-gcc15.csv
+
+    - name: Generate comparative markdown table
+      run: |
+        echo "Generating comparative markdown table"
+        python3 /tmp/generate_markdown_table.py \
+          "System_GCC=redis-benchmark-system-gcc.csv" \
+          "GCC_13=redis-benchmark-gcc13.csv" \
+          "GCC_15=redis-benchmark-gcc15.csv" > redis-benchmark-comparison.md
+        echo "Benchmark Comparison:"
+        cat redis-benchmark-comparison.md
 
     - name: Upload Redis Artifacts
       uses: actions/upload-artifact@v4
@@ -174,6 +232,11 @@ jobs:
         path: |
           ${{ github.workspace }}/redis-server-size-*.txt
           ${{ github.workspace }}/redis-benchmark-*.txt
+          ${{ github.workspace }}/redis-server-size-*.json
+          ${{ github.workspace }}/redis-benchmark-*.json
+          ${{ github.workspace }}/redis-server-size-*.csv
+          ${{ github.workspace }}/redis-benchmark-*.csv
+          ${{ github.workspace }}/redis-benchmark-comparison.md
 
     - name: Upload RPM
       uses: actions/upload-artifact@v4
