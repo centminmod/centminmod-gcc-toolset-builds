@@ -1,3 +1,5 @@
+![GitHub last commit (master)](https://img.shields.io/github/last-commit/centminmod/centminmod-gcc-toolset-builds/master) [![GitHub stars](https://img.shields.io/github/stars/centminmod/centminmod-gcc-toolset-builds.svg?style=flat-square)](https://github.com/centminmod/centminmod-gcc-toolset-builds/stargazers) [![GCC 15 RPM Build + Redis Benchmark Tests](https://github.com/centminmod/centminmod-gcc-toolset-builds/actions/workflows/build-gcc15-toolset-rpm-quick-redis-build-scheduled.yml/badge.svg)](https://github.com/centminmod/centminmod-gcc-toolset-builds/actions/workflows/build-gcc15-toolset-rpm-quick-redis-build-scheduled.yml)
+
 EL9
 
 ```
