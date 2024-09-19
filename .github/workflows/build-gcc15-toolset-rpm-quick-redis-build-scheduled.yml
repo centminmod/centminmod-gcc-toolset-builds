@@ -1,4 +1,4 @@
-name: CMM Scheduled rpmbuild GCC 15 Quick Redis Test
+name: Scheduled GCC 15 RPM + Redis Benchmark Tests
 
 on:
   schedule:
