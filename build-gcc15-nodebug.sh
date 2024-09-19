@@ -36,7 +36,6 @@ dnf install --allowerasing -y \
   zlib-devel \
   isl-devel \
   texinfo \
-  libtool \
   flex \
   bison \
   autoconf \
@@ -53,7 +52,6 @@ dnf install --allowerasing -y \
   openssl-devel \
   xz \
   xz-devel \
-  binutils \
   libtool \
   pkgconfig \
   gcc-toolset-13-annobin-annocheck \
@@ -131,6 +129,9 @@ CFLAGS_FOR_TARGET="\$CFLAGS_COMMON"
 CXXFLAGS_FOR_TARGET="\$CFLAGS_COMMON"
 STAGE1_CFLAGS="\$CFLAGS_COMMON"
 STAGE1_CXXFLAGS="\$CFLAGS_COMMON"
+
+# Export LD to use ld.gold
+# export LD=/usr/bin/ld.gold
 
 ../configure \
     CFLAGS="\$CFLAGS" \
