@@ -212,7 +212,7 @@ EOF
 
 # Add a custom changelog entry dynamically to the spec file
 DATE=$(date +"%a %b %d %Y")
-CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${GCC_VERSION}-1\n- Custom build for AlmaLinux ${DISTTAG}\n"
+CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${GCC_VERSION}-1\n- Custom build for ${DISTTAG}\n"
 
 sed -i '/^%changelog/a '"${CHANGELOG_ENTRY}" ${BUILD_DIR}/SPECS/gcc-custom.spec
 
