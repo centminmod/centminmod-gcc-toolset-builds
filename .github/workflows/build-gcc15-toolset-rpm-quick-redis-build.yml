@@ -105,7 +105,8 @@ jobs:
             echo 'Running Redis benchmark with' \$compiler_name
             src/redis-server --daemonize yes
             sleep 2
-            src/redis-benchmark -n 100000 -q > /workspace/redis-benchmark-\${compiler_name}.txt
+            # keyspace 1,000,000 and data size 1500 bytes
+            src/redis-benchmark -n 100000 -c 50 -r 1000000 -d 1500 -q > /workspace/redis-benchmark-\${compiler_name}.txt
             src/redis-cli shutdown
 
             # parse results

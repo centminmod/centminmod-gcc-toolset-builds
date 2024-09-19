@@ -16,10 +16,10 @@ def parse_args():
 def parse_file(filename):
     # Patterns for detailed lines and summary lines
     detail_pattern = re.compile(
-        r'^(?P<command>[A-Z0-9_ \(\)]+):\s+rps=(?P<rps>-?\d+(\.\d+)?)(?: \(overall: [^\)]+\))?\s+avg_msec=(?P<avg_msec>-?\d+(\.\d+)?)(?: \(overall: [^\)]+\))?'
+        r'^(?P<command>[^:]+):\s+rps=(?P<rps>-?\d+(\.\d+)?)(?: \(overall: [^\)]+\))?\s+avg_msec=(?P<avg_msec>-?\d+(\.\d+)?)(?: \(overall: [^\)]+\))?'
     )
     summary_pattern = re.compile(
-        r'^(?P<command>[A-Z0-9_ \(\)]+):\s+(?P<total_rps>\d+(\.\d+)?) requests per second, p50=(?P<p50>\d+(\.\d+)?) msec'
+        r'^(?P<command>[^:]+):\s+(?P<total_rps>\d+(\.\d+)?) requests per second, p50=(?P<p50>\d+(\.\d+)?) msec'
     )
     data = []
     with open(filename, 'r') as f:
