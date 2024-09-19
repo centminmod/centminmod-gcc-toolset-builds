@@ -100,5 +100,5 @@ jobs:
     - name: Upload RPM artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: gcc15-toolset-rpms
+        name: gcc15-toolset-rpms-${{ matrix.os.replace(':', '-') }}
         path: ${{ github.workspace }}/rpms/*.rpm
