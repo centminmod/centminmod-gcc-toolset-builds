@@ -49,8 +49,8 @@ dnf install --allowerasing -y \
   libtool \
   pkgconfig \
   zlib-devel \
-  zstd-devel \
-  libelf-devel \
+  libzstd-devel \
+  elfutils-libelf \
   expat-devel \
   --skip-broken
 
@@ -73,7 +73,7 @@ License:        GPLv3+
 URL:            https://www.gnu.org/software/binutils/
 Source0:        ${BINUTILS_SRC_TAR}
 
-BuildRequires:  gcc, make, texinfo, flex, bison, autoconf, automake, libtool, zlib-devel, zstd-devel, libelf-devel, expat-devel
+BuildRequires:  gcc, make, texinfo, flex, bison, autoconf, automake, libtool, zlib-devel, libzstd-devel, elfutils-libelf, expat-devel
 
 %description
 The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory.
