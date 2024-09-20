@@ -82,8 +82,6 @@ The GNU Binutils are a collection of binary tools. This package installs binutil
 %setup -q -n binutils-%{version}
 
 %build
-mkdir -p build
-cd build
 ../configure \
     --prefix=${PREFIX} \
     --mandir=${PREFIX}/share/man \
