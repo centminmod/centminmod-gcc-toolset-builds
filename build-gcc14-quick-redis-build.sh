@@ -89,13 +89,13 @@ fi
 
 # setup patches
 ls -lah /workspace/patches
-cp /workspace/patches/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SPECS/0001-Always-use-z-now-when-linking-with-pie.patch
+cp /workspace/patches/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SOURCES/0001-Always-use-z-now-when-linking-with-pie.patch
 
-cp /workspace/patches/optimize.patch ${BUILD_DIR}/SPECS/optimize.patch
+cp /workspace/patches/optimize.patch ${BUILD_DIR}/SOURCES/optimize.patch
 
-cp /workspace/patches/vectorize.patch ${BUILD_DIR}/SPECS/vectorize.patch
+cp /workspace/patches/vectorize.patch ${BUILD_DIR}/SOURCES/vectorize.patch
 
-cp /workspace/patches/compilespeed.patch ${BUILD_DIR}/SPECS/compilespeed.patch
+cp /workspace/patches/compilespeed.patch ${BUILD_DIR}/SOURCES/compilespeed.patch
 
 # Create spec file for GCC 14 with custom prefix
 cat << EOF > ${BUILD_DIR}/SPECS/gcc-custom.spec
