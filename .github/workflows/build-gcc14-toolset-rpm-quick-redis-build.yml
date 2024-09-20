@@ -41,6 +41,8 @@ jobs:
           # Copy generate_markdown_table.py
           cp /workspace/scripts/generate_markdown_table.py /workspace/generate_markdown_table.py
           chmod +x /workspace/generate_markdown_table.py
+          ls -lah /workspace
+          ls -lah /workspace/scripts
 
           # Copy the build script and run it
           cp /workspace/build-gcc14-quick-redis-build.sh /tmp
@@ -125,6 +127,12 @@ jobs:
           # Build and test with GCC 14
           source /etc/profile.d/gcc14-custom.sh
           build_and_test_redis 'gcc14' '/opt/gcc-custom/gcc14/bin/gcc'
+
+          echo 'Generating comparative markdown table'
+          python3 /workspace/generate_markdown_table.py \
+            "System_GCC=redis-benchmark-system-gcc.csv" \
+            "GCC_13=redis-benchmark-gcc13.csv" \
+            "GCC_14=redis-benchmark-gcc14.csv" > /workspace/redis-benchmark-comparison.md
         "
 
     - name: Display gcc version
@@ -217,15 +225,9 @@ jobs:
         echo "Redis benchmark with GCC 14:"
         cat ${{ github.workspace }}/redis-benchmark-gcc14.csv
 
-    - name: Generate comparative markdown table
+    - name: Display comparative markdown table
       run: |
-        echo "Generating comparative markdown table"
-        python3 /workspace/generate_markdown_table.py \
-          "System_GCC=redis-benchmark-system-gcc.csv" \
-          "GCC_13=redis-benchmark-gcc13.csv" \
-          "GCC_14=redis-benchmark-gcc14.csv" > redis-benchmark-comparison.md
-        echo "Benchmark Comparison:"
-        cat redis-benchmark-comparison.md
+        cat ${{ github.workspace }}/redis-benchmark-comparison.md
       continue-on-error: true
 
     - name: Upload Redis Artifacts
