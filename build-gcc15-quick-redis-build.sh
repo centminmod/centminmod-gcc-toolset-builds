@@ -88,13 +88,13 @@ if [ ! -f ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR} ]; then
 fi
 
 # setup patches
-cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SPECS/0001-Always-use-z-now-when-linking-with-pie.patch
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/patches/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SPECS/0001-Always-use-z-now-when-linking-with-pie.patch
 
-cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/optimize.patch ${BUILD_DIR}/SPECS/optimize.patch
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/patches/optimize.patch ${BUILD_DIR}/SPECS/optimize.patch
 
-cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/vectorize.patch ${BUILD_DIR}/SPECS/vectorize.patch
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/patches/vectorize.patch ${BUILD_DIR}/SPECS/vectorize.patch
 
-cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/compilespeed.patch ${BUILD_DIR}/SPECS/compilespeed.patch
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/patches/compilespeed.patch ${BUILD_DIR}/SPECS/compilespeed.patch
 
 # Create spec file for GCC 15 with custom prefix
 cat << EOF > ${BUILD_DIR}/SPECS/gcc-custom.spec
