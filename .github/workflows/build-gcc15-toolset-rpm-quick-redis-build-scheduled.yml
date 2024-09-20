@@ -37,11 +37,11 @@ jobs:
           fi
 
           # Copy redis-benchmark-parser.py
-          cp /workspace/redis-benchmark-parser.py /tmp
+          cp /workspace/scripts/redis-benchmark-parser.py /tmp
           chmod +x /tmp/redis-benchmark-parser.py
 
           # Copy generate_markdown_table.py
-          cp /workspace/generate_markdown_table.py /tmp
+          cp /workspace/scripts/generate_markdown_table.py /tmp
           chmod +x /tmp/generate_markdown_table.py
 
           # Copy the build script and run it
