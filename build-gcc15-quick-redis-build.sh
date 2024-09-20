@@ -54,6 +54,7 @@ dnf install --allowerasing -y \
   xz-devel \
   libtool \
   pkgconfig \
+  ccache \
   gcc-toolset-13-annobin-annocheck \
   gcc-toolset-13-annobin-docs.noarch \
   gcc-toolset-13-annobin-plugin-gcc \
@@ -87,14 +88,11 @@ if [ ! -f ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR} ]; then
   wget "https://github.com/gcc-mirror/gcc/archive/refs/heads/master.tar.gz" -O ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR}
 fi
 
-# setup patches
+# Setup patches
 ls -lah /workspace/patches
 cp /workspace/patches/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SOURCES/0001-Always-use-z-now-when-linking-with-pie.patch
-
 cp /workspace/patches/optimize.patch ${BUILD_DIR}/SOURCES/optimize.patch
-
 cp /workspace/patches/vectorize.patch ${BUILD_DIR}/SOURCES/vectorize.patch
-
 cp /workspace/patches/compilespeed.patch ${BUILD_DIR}/SOURCES/compilespeed.patch
 
 # Create spec file for GCC 15 with custom prefix
@@ -113,7 +111,7 @@ Patch1  : 0001-Always-use-z-now-when-linking-with-pie.patch
 Patch2  : vectorize.patch
 Patch3  : compilespeed.patch
 
-BuildRequires:  glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit
+BuildRequires:  glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit ccache
 
 %description
 GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project supporting various programming languages. This package installs GCC 15 in a custom directory.
@@ -126,7 +124,14 @@ rm -rf %{_builddir}/*
 mkdir -p build
 cd build
 
-# Conditional setting of flags based on RHEL version
+# Set up ccache
+mkdir -p /ccache
+export CCACHE_DIR=/ccache
+export CCACHE_COMPILERCHECK=content
+export CCACHE_SLOPPINESS=time_macros
+export CCACHE_MAXSIZE=10G
+
+# Set common compiler flags
 %if 0%{?rhel} == 8
 CFLAGS_COMMON="-g -gdwarf-4 -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-alloc-size-larger-than -Wno-pedantic -Wno-parentheses"
 %else
@@ -134,6 +139,8 @@ CFLAGS_COMMON="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-all
 %endif
 
 # Set flags for different stages
+export CC='ccache gcc'
+export CXX='ccache g++'
 CFLAGS="\$CFLAGS_COMMON"
 CXXFLAGS="\$CFLAGS_COMMON"
 BOOT_CFLAGS="\$CFLAGS_COMMON"
@@ -146,6 +153,7 @@ STAGE1_CXXFLAGS="\$CFLAGS_COMMON"
 # Export LD to use ld.gold
 # export LD=/usr/bin/ld.gold
 
+# Configure GCC
 ../configure \
     CFLAGS="\$CFLAGS" \
     CXXFLAGS="\$CXXFLAGS" \
