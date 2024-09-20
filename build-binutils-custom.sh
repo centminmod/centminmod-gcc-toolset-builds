@@ -79,7 +79,7 @@ BuildRequires:  gcc, make, texinfo, flex, bison, autoconf, automake, libtool, zl
 The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory.
 
 %prep
-%setup -q
+%setup -q -n binutils-%{version}
 
 %build
 mkdir -p build
