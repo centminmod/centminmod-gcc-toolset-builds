@@ -69,7 +69,7 @@ jobs:
           source /etc/profile.d/binutils-custom.sh
           ld --version | tee /workspace/binutils-version-output.log
           echo | tee -a /workspace/binutils-version-output.log
-          ${PREFIX}/bin/ld --version | tee -a /workspace/binutils-version-output.log
+          /opt/binutils-custom/bin/ld --version | tee -a /workspace/binutils-version-output.log
         "
 
     - name: Display binutils version
