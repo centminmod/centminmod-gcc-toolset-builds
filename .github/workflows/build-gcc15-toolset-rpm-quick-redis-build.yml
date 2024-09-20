@@ -39,7 +39,8 @@ jobs:
           chmod +x /tmp/redis-benchmark-parser.py
 
           # Copy generate_markdown_table.py
-          chmod +x /workspace/scripts/generate_markdown_table.py
+          cp /workspace/scripts/generate_markdown_table.py /workspace/generate_markdown_table.py
+          chmod +x /workspace/generate_markdown_table.py
 
           # Copy the build script and run it
           cp /workspace/build-gcc15-quick-redis-build.sh /tmp
@@ -219,12 +220,13 @@ jobs:
     - name: Generate comparative markdown table
       run: |
         echo "Generating comparative markdown table"
-        python3 /workspace/scripts/generate_markdown_table.py \
+        python3 /workspace/generate_markdown_table.py \
           "System_GCC=redis-benchmark-system-gcc.csv" \
           "GCC_13=redis-benchmark-gcc13.csv" \
           "GCC_15=redis-benchmark-gcc15.csv" > redis-benchmark-comparison.md
         echo "Benchmark Comparison:"
         cat redis-benchmark-comparison.md
+      continue-on-error: true
 
     - name: Upload Redis Artifacts
       uses: actions/upload-artifact@v4
