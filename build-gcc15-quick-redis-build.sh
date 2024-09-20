@@ -87,6 +87,15 @@ if [ ! -f ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR} ]; then
   wget "https://github.com/gcc-mirror/gcc/archive/refs/heads/master.tar.gz" -O ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR}
 fi
 
+# setup patches
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SPECS/0001-Always-use-z-now-when-linking-with-pie.patch
+
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/optimize.patch ${BUILD_DIR}/SPECS/optimize.patch
+
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/vectorize.patch ${BUILD_DIR}/SPECS/vectorize.patch
+
+cp https://raw.githubusercontent.com/centminmod/centminmod-gcc-toolset-builds/refs/heads/master/scripts/compilespeed.patch ${BUILD_DIR}/SPECS/compilespeed.patch
+
 # Create spec file for GCC 15 with custom prefix
 cat << EOF > ${BUILD_DIR}/SPECS/gcc-custom.spec
 Name:           gcc-custom
@@ -97,6 +106,11 @@ Summary:        GCC 15 with custom installation path
 License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        ${GCC_SRC_TAR}
+
+Patch0  : optimize.patch
+Patch1  : 0001-Always-use-z-now-when-linking-with-pie.patch
+Patch2  : vectorize.patch
+Patch3  : compilespeed.patch
 
 BuildRequires:  glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit
 
