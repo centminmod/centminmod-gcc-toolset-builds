@@ -1,4 +1,4 @@
-name: 02 CMM GCC 15 Separate RPMs Redis Test
+name: 03 CMM GCC 15 Separate RPMs Redis Test
 
 on:
   workflow_dispatch:
