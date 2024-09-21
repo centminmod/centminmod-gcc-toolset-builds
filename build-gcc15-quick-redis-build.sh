@@ -119,6 +119,10 @@ GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project s
 %prep
 rm -rf %{_builddir}/*
 %setup -q -n gcc-master
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 mkdir -p build

@@ -3,7 +3,7 @@
 set -e
 
 # Set variables
-GCC_VERSION="14.3.0"
+GCC_VERSION="14.2.1"
 GCC_SRC_TAR="gcc-${GCC_VERSION}.tar.gz"
 BUILD_DIR="$HOME/rpmbuild"
 PREFIX="/opt/gcc-custom/gcc14"
@@ -119,6 +119,10 @@ GCC (GNU Compiler Collection) is a compiler system produced by the GNU Project s
 %prep
 rm -rf %{_builddir}/*
 %setup -q -n gcc-releases-gcc-14
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 mkdir -p build
