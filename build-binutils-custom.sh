@@ -76,7 +76,7 @@ Source0:        ${BINUTILS_SRC_TAR}
 BuildRequires:  gcc, make, texinfo, flex, bison, autoconf, automake, libtool, zlib-devel, libzstd-devel, elfutils-libelf, expat-devel
 
 %description
-The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory. With source /etc/profile.d/binutils-custom.sh activation support.
+The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory. With source /opt/binutils-custom/enable activation support.
 
 %prep
 %setup -q -n binutils-%{version}
@@ -100,8 +100,8 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 # Add enablement script
-mkdir -p %{buildroot}/etc/profile.d
-cat << EOL > %{buildroot}/etc/profile.d/binutils-custom.sh
+mkdir -p %{buildroot}${PREFIX}
+cat << EOL > %{buildroot}${PREFIX}/enable
 export PATH=${PREFIX}/bin:\$PATH
 export LD_LIBRARY_PATH=${PREFIX}/lib:\$LD_LIBRARY_PATH
 export MANPATH=${PREFIX}/share/man:\$MANPATH
@@ -112,14 +112,14 @@ rm -rf %{buildroot}
 
 %files
 ${PREFIX}
-/etc/profile.d/binutils-custom.sh
+${PREFIX}/enable
 
 %changelog
 EOF
 
 # Add a custom changelog entry dynamically to the spec file
 DATE=$(date +"%a %b %d %Y")
-CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${BINUTILS_VERSION}-1\n- Custom build for ${DISTTAG}\n- source /etc/profile.d/binutils-custom.sh activation support\n"
+CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${BINUTILS_VERSION}-1\n- Custom build for ${DISTTAG}\n- source /opt/binutils-custom/enable activation support\n"
 
 sed -i '/^%changelog/a '"${CHANGELOG_ENTRY}" ${BUILD_DIR}/SPECS/binutils-custom.spec
 

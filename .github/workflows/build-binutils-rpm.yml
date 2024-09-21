@@ -66,7 +66,7 @@ jobs:
 
           # Check the binutils version
           echo
-          source /etc/profile.d/binutils-custom.sh
+          source /opt/binutils-custom/enable
           ld --version | tee /workspace/binutils-version-output.log
           echo | tee -a /workspace/binutils-version-output.log
           /opt/binutils-custom/bin/ld --version | tee -a /workspace/binutils-version-output.log

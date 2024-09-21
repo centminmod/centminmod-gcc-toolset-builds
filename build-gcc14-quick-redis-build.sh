@@ -218,8 +218,8 @@ cd build
 make install DESTDIR=%{buildroot}
 
 # Add enablement script
-mkdir -p %{buildroot}/etc/profile.d
-cat << EOL > %{buildroot}/etc/profile.d/gcc14-custom.sh
+mkdir -p %{buildroot}${PREFIX}
+cat << EOL > %{buildroot}${PREFIX}/enable
 export PATH=${PREFIX}/bin:\$PATH
 export LD_LIBRARY_PATH=${PREFIX}/lib64:\$LD_LIBRARY_PATH
 export MANPATH=${PREFIX}/share/man:\$MANPATH
@@ -230,7 +230,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 ${PREFIX}
-/etc/profile.d/gcc14-custom.sh
+${PREFIX}/enable
 EOF
 
 # Add a custom changelog entry dynamically to the spec file

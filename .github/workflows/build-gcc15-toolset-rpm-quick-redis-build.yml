@@ -76,7 +76,7 @@ jobs:
 
           # Check the GCC version
           echo
-          source /etc/profile.d/gcc15-custom.sh
+          source /opt/gcc-custom/gcc15/enable
           gcc -v 2>&1 | tee /workspace/gcc-version-output.log
           echo | tee -a /workspace/gcc-version-output.log
           /opt/gcc-custom/gcc15/bin/gcc -v 2>&1 | tee -a /workspace/gcc-version-output.log
@@ -125,7 +125,7 @@ jobs:
           build_and_test_redis 'gcc13' '/opt/rh/gcc-toolset-13/root/usr/bin/gcc'
 
           # Build and test with GCC 15
-          source /etc/profile.d/gcc15-custom.sh
+          source /opt/gcc-custom/gcc15/enable
           build_and_test_redis 'gcc15' '/opt/gcc-custom/gcc15/bin/gcc'
 
           echo 'Generating comparative markdown table'
