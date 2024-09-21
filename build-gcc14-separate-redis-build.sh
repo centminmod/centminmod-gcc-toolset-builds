@@ -93,6 +93,13 @@ dnf install --allowerasing -y \
   gcc-toolset-13-runtime \
   expat-devel \
   ncurses-devel \
+  elfutils-devel \
+  elfutils-libelf-devel \
+  libdwarf-devel \
+  texlive-latex-bin-bin \
+  texlive-makeindex-bin \
+  rpm-devel \
+  gettext-devel \
   ${PYTHON_DEVEL} --skip-broken
 
 # Create RPM build directories
