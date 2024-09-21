@@ -82,17 +82,23 @@ The GNU Binutils are a collection of binary tools. This package installs binutil
 %setup -q -n binutils-%{version}
 
 %build
+export LDFLAGS="$LDFLAGS -Wl,--enable-new-dtags"
 ./configure \
     --prefix=${PREFIX} \
     --mandir=${PREFIX}/share/man \
     --infodir=${PREFIX}/share/info \
-    --enable-gold \
+    --enable-gold=default \
     --enable-plugins \
     --enable-ld=default \
     --enable-shared \
     --disable-multilib \
     --disable-werror \
-    --with-system-zlib
+    --with-system-zlib \
+    --enable-relro=yes \
+    --enable-lto \
+    --enable-separate-code=yes \
+    --enable-threads=yes \
+    --enable-new-dtags --disable-rpath
 
 make %{?_smp_mflags}
 
