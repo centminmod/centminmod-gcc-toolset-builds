@@ -254,8 +254,8 @@ CFLAGS_COMMON="-g -O2 -Wno-maybe-uninitialized -Wno-free-nonheap-object -Wno-all
 %endif
 
 # Set flags for different stages
-export CC='ccache gcc'
-export CXX='ccache g++'
+export CC='gcc'
+export CXX='g++'
 CFLAGS="\$CFLAGS_COMMON"
 CXXFLAGS="\$CFLAGS_COMMON"
 BOOT_CFLAGS="\$CFLAGS_COMMON"
