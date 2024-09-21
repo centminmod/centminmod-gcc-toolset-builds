@@ -67,7 +67,7 @@ cat << EOF > ${BUILD_DIR}/SPECS/binutils-custom.spec
 Name:           binutils-custom
 Version:        ${BINUTILS_VERSION}
 Release:        1%{?dist}
-Summary:        Binutils ${BINUTILS_VERSION} with custom installation path
+Summary:        Binutils ${BINUTILS_VERSION} at ${PREFIX} install path
 
 License:        GPLv3+
 URL:            https://www.gnu.org/software/binutils/
@@ -76,7 +76,7 @@ Source0:        ${BINUTILS_SRC_TAR}
 BuildRequires:  gcc, make, texinfo, flex, bison, autoconf, automake, libtool, zlib-devel, libzstd-devel, elfutils-libelf, expat-devel
 
 %description
-The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory.
+The GNU Binutils are a collection of binary tools. This package installs binutils ${BINUTILS_VERSION} in a custom directory. With source /etc/profile.d/binutils-custom.sh activation support.
 
 %prep
 %setup -q -n binutils-%{version}
@@ -119,7 +119,7 @@ EOF
 
 # Add a custom changelog entry dynamically to the spec file
 DATE=$(date +"%a %b %d %Y")
-CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${BINUTILS_VERSION}-1\n- Custom build for ${DISTTAG}\n"
+CHANGELOG_ENTRY="* ${DATE} ${USER_NAME} <${USER_EMAIL}> - ${BINUTILS_VERSION}-1\n- Custom build for ${DISTTAG}\n- source /etc/profile.d/binutils-custom.sh activation support\n"
 
 sed -i '/^%changelog/a '"${CHANGELOG_ENTRY}" ${BUILD_DIR}/SPECS/binutils-custom.spec
 
