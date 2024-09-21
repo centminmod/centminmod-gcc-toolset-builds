@@ -119,7 +119,7 @@ fi
 
 # Download annobin source tarball if not already available
 if [ ! -f ${BUILD_DIR}/SOURCES/${ANNOBIN_SRC_TAR} ]; then
-  wget "https://sourceware.org/ftp/annobin/${ANNOBIN_SRC_TAR}" -O ${BUILD_DIR}/SOURCES/${ANNOBIN_SRC_TAR}
+  wget "https://nickc.fedorapeople.org/${ANNOBIN_SRC_TAR}" -O ${BUILD_DIR}/SOURCES/${ANNOBIN_SRC_TAR}
 fi
 
 # Copy patches to SOURCES directory
@@ -145,7 +145,7 @@ License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        gcc-%{gcc_version}.tar.gz
 Source1:        gdb-%{gdb_version}.tar.xz
-Source2:        annobin-%{annobin_version}.tar.xz
+Source2:        annobin-%{annobin_version}.tar.gz
 
 Patch0:         optimize.patch
 Patch1:         0001-Always-use-z-now-when-linking-with-pie.patch
