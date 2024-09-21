@@ -108,8 +108,7 @@ Source0:        ${GCC_SRC_TAR}
 
 Patch0  : optimize.patch
 Patch1  : 0001-Always-use-z-now-when-linking-with-pie.patch
-Patch2  : vectorize.patch
-Patch3  : compilespeed.patch
+Patch2  : compilespeed.patch
 
 BuildRequires:  glibc-devel gmp-devel mpfr-devel libmpc-devel zlib-devel isl-devel texinfo libtool flex bison autoconf automake debugedit ccache
 
@@ -122,7 +121,6 @@ rm -rf %{_builddir}/*
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 mkdir -p build

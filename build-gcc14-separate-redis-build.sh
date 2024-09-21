@@ -104,10 +104,12 @@ dnf install --allowerasing -y \
 
 # Create RPM build directories
 mkdir -p ${BUILD_DIR}/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+mkdir -p /home/gcc-toolset-build
 
 # Download GCC source tarball if not already available
 if [ ! -f ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR} ]; then
-  wget "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/${GCC_SRC_TAR}" -O ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR}
+  #wget "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/${GCC_SRC_TAR}" -O ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR}
+  wget "https://github.com/gcc-mirror/gcc/archive/refs/heads/releases/gcc-14.tar.gz" -O ${BUILD_DIR}/SOURCES/${GCC_SRC_TAR}
 fi
 
 # Download GDB source tarball if not already available
@@ -121,6 +123,7 @@ if [ ! -f ${BUILD_DIR}/SOURCES/${ANNOBIN_SRC_TAR} ]; then
 fi
 
 # Copy patches to SOURCES directory
+ls -lah /workspace/patches
 cp /workspace/patches/0001-Always-use-z-now-when-linking-with-pie.patch ${BUILD_DIR}/SOURCES/
 cp /workspace/patches/optimize.patch ${BUILD_DIR}/SOURCES/
 cp /workspace/patches/vectorize.patch ${BUILD_DIR}/SOURCES/
