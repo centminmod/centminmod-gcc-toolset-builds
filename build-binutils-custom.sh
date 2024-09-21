@@ -89,7 +89,7 @@ export LDFLAGS="$LDFLAGS -Wl,--enable-new-dtags"
     --infodir=${PREFIX}/share/info \
     --enable-gold=default \
     --enable-plugins \
-    --enable-ld=default \
+    --enable-ld \
     --enable-shared \
     --disable-multilib \
     --disable-werror \
