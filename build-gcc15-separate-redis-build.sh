@@ -145,7 +145,7 @@ License:        GPLv3+
 URL:            https://gcc.gnu.org
 Source0:        gcc-%{gcc_version}.tar.gz
 Source1:        gdb-%{gdb_version}.tar.xz
-Source2:        annobin-%{annobin_version}.tar.gz
+Source2:        annobin-%{annobin_version}.tar.xz
 
 Patch0:         optimize.patch
 Patch1:         0001-Always-use-z-now-when-linking-with-pie.patch
