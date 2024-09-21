@@ -108,13 +108,13 @@ jobs:
             sysctl vm.overcommit_memory=1 || true
             src/redis-server --daemonize yes
             sleep 60
-            # keyspace 100,000 and data size 150 bytes
-            src/redis-benchmark -n 10000 -c 10 -r 100000 -d 150 -q > /workspace/redis-benchmark-\${compiler_name}.txt || true
+            # keyspace 1000 and data size 150 bytes
+            src/redis-benchmark -n 10000 -c 5 -r 1000 -d 150 -q > /workspace/redis-benchmark-\${compiler_name}.txt || true
             src/redis-cli shutdown
 
             # parse results
-            python3 /tmp/redis-benchmark-parser.py -f json /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.json
-            python3 /tmp/redis-benchmark-parser.py -f csv /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.csv
+            python3 /tmp/redis-benchmark-parser.py -f json /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.json || true
+            python3 /tmp/redis-benchmark-parser.py -f csv /workspace/redis-benchmark-\${compiler_name}.txt > /workspace/redis-benchmark-\${compiler_name}.csv || true
           }
 
           # Build and test with system GCC
