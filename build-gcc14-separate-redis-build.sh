@@ -223,7 +223,7 @@ Annobin is a GCC plugin that records information about how binaries are built.
 
 %prep
 rm -rf %{_builddir}/*
-%setup -q -n gcc-%{gcc_version}
+%setup -q -n gcc-releases-gcc-14
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
