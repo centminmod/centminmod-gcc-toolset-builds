@@ -232,6 +232,12 @@ jobs:
         cat ${{ github.workspace }}/redis-benchmark-comparison.md
       continue-on-error: true
 
+    - name: Debug - List workspace contents
+      run: |
+        echo "Contents of workspace directory:"
+        ls -la ${{ github.workspace }}/
+      continue-on-error: true
+
     - name: Upload Redis Artifacts
       uses: actions/upload-artifact@v4
       with:
