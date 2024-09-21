@@ -129,10 +129,11 @@ jobs:
           build_and_test_redis 'gcc15' '/opt/gcc-custom/gcc15/bin/gcc'
 
           echo 'Generating comparative markdown table'
+          cd /workspace
           python3 /workspace/generate_markdown_table.py \
             "System_GCC=redis-benchmark-system-gcc.csv" \
             "GCC_13=redis-benchmark-gcc13.csv" \
-            "GCC_15=redis-benchmark-gcc15.csv" > /workspace/redis-benchmark-comparison.md
+            "GCC_15=redis-benchmark-gcc15.csv" > /workspace/redis-benchmark-comparison.md || true
         "
 
     - name: Display gcc version
